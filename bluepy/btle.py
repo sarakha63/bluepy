@@ -572,12 +572,17 @@ class ScanEntry:
         # then with scan response data. Also, the device may update the
         # advertisement or scan data
         isNewData = False
+        passedSdid = []
         while len(data) >= 2:
             sdlen, sdid = struct.unpack_from('<BB', data)
             val = data[2 : sdlen + 1]
             if (sdid not in self.scanData) or (val != self.scanData[sdid]):
                 isNewData = True
             self.scanData[sdid] = val
+            if sdid in passedSdid:
+                self.scanData[sdid] = self.scanData[sdid] + '/' + val
+            else :
+                passedSdid.append(sdid)
             data = data[sdlen + 1:]
 
         self.updateCount += 1
