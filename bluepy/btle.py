@@ -289,17 +289,13 @@ class BluepyHelper:
         if self._helper is not None:
             DBG("Stopping ", helperExe)
             self._poller.unregister(self._helper.stdout)
+            self._helper.stdin.write("quit\n")
+            self._helper.stdin.flush()
             try:
-                self._helper.stdin.write("quit\n")
-                self._helper.stdin.flush()
-            except BrokenPipeError:
-                self._helper = None
-
-            if self._helper is not None and not self._helper.wait(5):
-                try:
-                    self._helper.kill()
-                except:
-                    pass
+                self._helper.communicate(timeout=10)
+            except subprocess.TimeoutExpired:
+                self._helper.kill()
+                self._helper.communicate()
             self._helper = None
         if self._stderr is not None:
             self._stderr.close()
@@ -309,15 +305,8 @@ class BluepyHelper:
         if self._helper is None:
             raise BTLEInternalError("Helper not started (did you call connect()?)")
         DBG("Sent: ", cmd)
-        try:
-            self._helper.stdin.write(cmd)
-            self._helper.stdin.flush()
-        except BrokenPipeError:
-            self._helper = None
-            if self._stderr is not None:
-                self._stderr.close()
-                self._stderr = None
-            raise BTLEInternalError("Disconnected from helper, try connecting again")
+        self._helper.stdin.write(cmd)
+        self._helper.stdin.flush()
 
     def _mgmtCmd(self, cmd):
         self._writeCmd(cmd + '\n')
