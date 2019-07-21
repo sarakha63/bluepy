@@ -440,7 +440,7 @@ class Peripheral(BluepyHelper):
             self._writeCmd("conn %s %s\n" % (addr, addrType))
         rsp = self._getResp('stat')
         timeout = time.time() + 15
-        while (rsp['state'][0] == 'tryconn' or time.time()<timeout):
+        while (rsp['state'][0] == 'tryconn' and time.time()<timeout):
             rsp = self._getResp('stat')
         if rsp['state'][0] != 'conn':
             self._stopHelper()
