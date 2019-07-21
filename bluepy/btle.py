@@ -439,11 +439,11 @@ class Peripheral(BluepyHelper):
             self._writeCmd("conn %s %s %s\n" % (addr, addrType, "hci"+str(iface)))
         else:
             self._writeCmd("conn %s %s\n" % (addr, addrType))
-        rsp = self._getResp('stat')
+        rsp = self._getResp('stat',5)
         timeout = time.time() + 5
         while (rsp['state'][0] == 'tryconn'):
             if time.time()<timeout:
-                rsp = self._getResp('stat')
+                rsp = self._getResp('stat',5)
             else:
                 break
         if rsp['state'][0] != 'conn':
