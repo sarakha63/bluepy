@@ -444,7 +444,7 @@ class Peripheral(BluepyHelper):
             if time.time()<timeout:
                 rsp = self._getResp('stat')
             else:
-            break
+                break
         if rsp['state'][0] != 'conn':
             self._stopHelper()
             raise BTLEDisconnectError("Failed to connect to peripheral %s, addr type: %s" % (addr, addrType), rsp)
