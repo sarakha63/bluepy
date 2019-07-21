@@ -439,14 +439,15 @@ class Peripheral(BluepyHelper):
         else:
             self._writeCmd("conn %s %s\n" % (addr, addrType))
         rsp = self._getResp('stat',5)
-        timeout = time.time() + 5
-        while (rsp['state'][0] == 'tryconn'):
-            if time.time()<timeout:
+        if rsp == None:
+            rsp = self._getResp('stat',5)
+        if rsp != None :
+            while (rsp['state'][0] == 'tryconn'):
                 rsp = self._getResp('stat',5)
-            else:
-                break
-        if rsp['state'][0] != 'conn':
-            self._stopHelper()
+            if rsp['state'][0] != 'conn':
+                self._stopHelper()
+                raise BTLEDisconnectError("Failed to connect to peripheral %s, addr type: %s" % (addr, addrType), rsp)
+        else:
             raise BTLEDisconnectError("Failed to connect to peripheral %s, addr type: %s" % (addr, addrType), rsp)
 
     def connect(self, addr, addrType=ADDR_TYPE_PUBLIC, iface=None):
