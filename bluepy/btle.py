@@ -434,6 +434,7 @@ class Peripheral(BluepyHelper):
         self.addr = addr
         self.addrType = addrType
         self.iface = iface
+        self.disconnect()
         if iface is not None:
             self._writeCmd("conn %s %s %s\n" % (addr, addrType, "hci"+str(iface)))
         else:
