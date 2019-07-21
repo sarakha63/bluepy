@@ -383,7 +383,7 @@ class BluepyHelper:
 
     def status(self):
         self._writeCmd("stat\n")
-        return self._waitResp(['stat'])
+        return self._waitResp(['stat'],5)
 
 
 class Peripheral(BluepyHelper):
@@ -438,9 +438,9 @@ class Peripheral(BluepyHelper):
             self._writeCmd("conn %s %s %s\n" % (addr, addrType, "hci"+str(iface)))
         else:
             self._writeCmd("conn %s %s\n" % (addr, addrType))
-        rsp = self._getResp('stat',5)
+        rsp = self._getResp('stat',2)
         if rsp == None:
-            rsp = self._getResp('stat',5)
+            rsp = self._getResp('stat',2)
         if rsp != None :
             while (rsp['state'][0] == 'tryconn'):
                 rsp = self._getResp('stat',5)
@@ -553,7 +553,7 @@ class Peripheral(BluepyHelper):
         cmd = "wrr" if withResponse else "wr"
         self._writeCmd(
             "%s %X %s\n" % (cmd, handle, binascii.b2a_hex(val).decode('utf-8')))
-        return self._getResp('wr', timeout=timeout)
+        return self._getResp('wr', 5)
 
     def setSecurityLevel(self, level):
         self._writeCmd("secu %s\n" % level)
