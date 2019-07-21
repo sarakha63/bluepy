@@ -306,7 +306,10 @@ class BluepyHelper:
             raise BTLEInternalError("Helper not started (did you call connect()?)")
         DBG("Sent: ", cmd)
         self._helper.stdin.write(cmd)
-        self._helper.stdin.flush()
+        try:
+            self._helper.stdin.flush()
+        except BrokenPipeError:
+            pass
 
     def _mgmtCmd(self, cmd):
         self._writeCmd(cmd + '\n')
@@ -436,7 +439,8 @@ class Peripheral(BluepyHelper):
         else:
             self._writeCmd("conn %s %s\n" % (addr, addrType))
         rsp = self._getResp('stat')
-        while rsp['state'][0] == 'tryconn':
+        timeout = time.time() + 15
+        while (rsp['state'][0] == 'tryconn' or time.time()<timeout):
             rsp = self._getResp('stat')
         if rsp['state'][0] != 'conn':
             self._stopHelper()
@@ -543,8 +547,9 @@ class Peripheral(BluepyHelper):
         # Without response, a value too long for one packet will be truncated,
         # but with response, it will be sent as a queued write
         cmd = "wrr" if withResponse else "wr"
-        self._writeCmd("%s %X %s\n" % (cmd, handle, binascii.b2a_hex(val).decode('utf-8')))
-        return self._getResp('wr')
+        self._writeCmd(
+            "%s %X %s\n" % (cmd, handle, binascii.b2a_hex(val).decode('utf-8')))
+        return self._getResp('wr', timeout=timeout)
 
     def setSecurityLevel(self, level):
         self._writeCmd("secu %s\n" % level)
