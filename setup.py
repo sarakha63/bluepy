@@ -76,7 +76,7 @@ except ImportError:
 
 setup (
     name='bluepy',
-    version='1.1.3',
+    version='1.1.4',
     description='Python module for interfacing with BLE devices through Bluez',
     author='Ian Harvey',
     author_email='website-contact@fenditton.org',
