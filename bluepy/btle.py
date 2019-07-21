@@ -434,7 +434,6 @@ class Peripheral(BluepyHelper):
         self.addr = addr
         self.addrType = addrType
         self.iface = iface
-        self.disconnect(False)
         if iface is not None:
             self._writeCmd("conn %s %s %s\n" % (addr, addrType, "hci"+str(iface)))
         else:
@@ -463,9 +462,8 @@ class Peripheral(BluepyHelper):
         self.setDelegate(None)
 
         self._writeCmd("disc\n")
-        self._getResp('stat')
-        if stopHelper:
-            self._stopHelper()
+        self._getResp('stat',5)
+        self._stopHelper()
 
     def discoverServices(self):
         self._writeCmd("svcs\n")
