@@ -434,7 +434,7 @@ class Peripheral(BluepyHelper):
         self.addr = addr
         self.addrType = addrType
         self.iface = iface
-        self.disconnect()
+        self.disconnect(False)
         if iface is not None:
             self._writeCmd("conn %s %s %s\n" % (addr, addrType, "hci"+str(iface)))
         else:
@@ -456,7 +456,7 @@ class Peripheral(BluepyHelper):
         elif addr is not None:
             self._connect(addr, addrType, iface)
 
-    def disconnect(self):
+    def disconnect(self,stopHelper = True):
         if self._helper is None:
             return
         # Unregister the delegate first
@@ -464,7 +464,8 @@ class Peripheral(BluepyHelper):
 
         self._writeCmd("disc\n")
         self._getResp('stat')
-        self._stopHelper()
+        if stopHelper:
+            self._stopHelper()
 
     def discoverServices(self):
         self._writeCmd("svcs\n")
