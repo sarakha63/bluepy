@@ -293,7 +293,7 @@ class BluepyHelper:
             self._helper.stdin.flush()
             try:
                 self._helper.communicate(timeout=10)
-            except TimeoutExpired:
+            except subprocess.TimeoutExpired:
                 self._helper.kill()
                 self._helper.communicate()
             self._helper = None
