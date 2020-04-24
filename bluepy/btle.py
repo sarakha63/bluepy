@@ -379,7 +379,7 @@ class BluepyHelper:
                 # Scan response when we weren't interested. Ignore it
                 continue
             else:
-                raise BTLEInternalError("Unexpected response (%s)" % respType, resp)
+                continue
 
     def status(self):
         self._writeCmd("stat\n")
@@ -853,7 +853,7 @@ class Scanner(BluepyHelper):
                     self.delegate.handleDiscovery(dev, (dev.updateCount <= 1), isNewData)
                  
             else:
-                raise BTLEInternalError("Unexpected response: " + respType, resp)
+                continue
 
     def getDevices(self):
         return self.scanned.values()
